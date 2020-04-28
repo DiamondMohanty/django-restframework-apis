@@ -7,6 +7,8 @@ Implementation of various concepts of django rest framework by creating various 
   <li>
      Create a virtual environment using command <pre>python -m virtualenv django-env</pre>
   </li>
+  
+  
   <li>
       Activate the virtual env and install the dependencies using the requirement.txt file. 
     <ul>
@@ -16,4 +18,19 @@ Implementation of various concepts of django rest framework by creating various 
     </ul>    
   </li>
 </ol>
-  
+ 
+<h2>Enabling the Admin Account</h2>
+<ol>
+  <li>
+     Enable the admin account 
+    <pre>python manage.py migrate</pre>
+    <pre>python manage.py createsuperuser</pre>
+  </li>
+</ol>
+
+<h2>Start the webserver</h2>
+<ol>
+  <li>Webserver will start at http://127.0.0.1:8000 <pre>python manage.py runserver</pre>
+  </li>
+</ol>
+
