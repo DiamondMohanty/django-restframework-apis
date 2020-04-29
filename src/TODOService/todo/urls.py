@@ -1,11 +1,11 @@
 from django.urls import path
-from .views import todo, todo_detail
+from .views import TODOList, TODODetails
 from rest_framework.urlpatterns import format_suffix_patterns
 
 
 urlpatterns = [
-    path('todo/', todo),
-    path('todo/detail/<int:id>/', todo_detail),
+    path('todo/', TODOList.as_view()),
+    path('todo/detail/<int:id>/', TODODetails.as_view()),
 ]
 
 urlpatterns= format_suffix_patterns(urlpatterns=urlpatterns)

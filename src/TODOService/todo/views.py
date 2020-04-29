@@ -1,46 +1,58 @@
-from django.http import JsonResponse, HttpResponse
-from rest_framework.decorators import api_view
 from .models import TODO
 from .serializers import TODOSerializer
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.views import APIView
 
-# Create your views here.
-@api_view(['GET', 'POST'])
-def todo(request, format=None):
+class TODOList(APIView):
 
-    if request.method == 'GET':
+    def get(self, request, format=None):
         query_set = TODO.objects.all()
         serializer = TODOSerializer(query_set, many=True)
-        return Response(serializer.data)
-    elif request.method == 'POST':
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, format=None):
         data = JSONParser().parse(request)
         serializer = TODOSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(['GET', 'PUT', 'DELETE'])
-def todo_detail(request, id, format=None):
+class TODODetails(APIView):
 
-    try:
-        todo = TODO.objects.get(pk=id)
-    except TODO.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+    @staticmethod
+    def get_todo(pk):
+        try:
+            todo = TODO.objects.get(pk=pk)
+            return todo
+        except TODO.DoesNotExist:
+            return None
 
-    if request.method == 'GET':
+    def get(self, request, id, format=None):
+        todo = TODODetails.get_todo(id)
+        if todo is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = TODOSerializer(todo)
-        return Response(serializer.data)
-    elif request.method == 'DELETE':
-        todo.delete()
-        return HttpResponse(status=status.HTTP_204_NO_CONTENT)
-    elif request.method == 'PUT':
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request, id, format=None):
+        todo = TODODetails.get_todo(id)
+        if todo is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
         data = JSONParser().parse(request)
-        serializer = TODOSerializer(todo, data=data)
+        serializer = TODOSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, id, format=None):
+        todo = TODODetails.get_todo(id)
+        if todo is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        todo.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
