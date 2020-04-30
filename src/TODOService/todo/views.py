@@ -1,12 +1,13 @@
 from .models import TODO
 from .serializers import TODOSerializer
-from rest_framework.parsers import JSONParser
-from rest_framework.response import Response
-from rest_framework import status
 from rest_framework import mixins
 from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
+
 
 class TODOList(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
+
+    permission_classes = (IsAuthenticated, )
 
     queryset = TODO.objects.all()
     serializer_class = TODOSerializer
@@ -17,12 +18,14 @@ class TODOList(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericA
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
 
+
 class TODODetails(
     mixins.UpdateModelMixin,
     mixins.RetrieveModelMixin,
     mixins.DestroyModelMixin,
     generics.GenericAPIView
 ):
+    permission_classes = (IsAuthenticated,)
     queryset = TODO.objects.all()
     serializer_class = TODOSerializer
     lookup_field = 'id'
